@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
+import './Map.css';
 
 const OptimizedWorldMap = () => {
-  const [map, setMap] = useState(null);
-
   useEffect(() => {
-    if (typeof window !== 'undefined' && !map) {
-      const L = window.L;
-      if (!L) return;
+    // Créer la carte seulement au premier rendu
+    const map = window.L.map('map', {
+      center: [20, 0],
+      zoom: 3
+    });
 
-      const mapInstance = L.map('map').setView([48.8566, 2.3522], 5);
+    // Ajouter la couche de tuiles
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 18
+    }).addTo(map);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(mapInstance);
-
-      setMap(mapInstance);
-
-      return () => {
-        mapInstance.remove();
-      };
-    }
-  }, [map]);
+    // Nettoyage à la destruction du composant
+    return () => {
+      map.remove();
+    };
+  }, []); // Tableau de dépendances vide = exécution unique
 
   return (
-    <div style={{ width: '100%', height: '500px' }}>
-      <div id="map" style={{ width: '100%', height: '100%' }}></div>
+    <div className="map-container">
+      <div id="map"></div>
     </div>
   );
 };
