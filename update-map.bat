@@ -4,15 +4,15 @@ echo Mise a jour de World Political Map...
 :: Aller dans le dossier du projet
 cd /d %USERPROFILE%\Documents\world-political-map
 
-:: Récupérer les dernières modifications
+:: Recuperer les dernieres modifications
 echo Recuperation des mises a jour...
-git pull
+git pull origin main
 
-:: Mettre à jour les dépendances si nécessaire
+:: Mettre a jour les dependances si necessaire
 echo Mise a jour des dependances...
 call npm install
 
-:: Démarrer l'application
+:: Demarrer l'application
 echo Demarrage de l'application...
 call npm start
 

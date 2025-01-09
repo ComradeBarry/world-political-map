@@ -10,7 +10,7 @@ if exist world-political-map (
     rd /s /q world-political-map
 )
 
-:: Créer un nouveau projet React
+:: Creer un nouveau projet React
 echo Creation du projet React...
 call npx create-react-app world-political-map
 cd world-political-map
@@ -22,12 +22,12 @@ git remote add origin https://github.com/ComradeBarry/world-political-map.git
 git fetch origin
 git reset --hard origin/main
 
-:: Installer les dépendances
+:: Installer les dependances
 echo Installation des dependances...
 call npm install leaflet recharts lucide-react @radix-ui/react-slot
 call npm install -D tailwindcss postcss autoprefixer
 
-:: Démarrer l'application
+:: Demarrer l'application
 echo Demarrage de l'application...
 call npm start
 
