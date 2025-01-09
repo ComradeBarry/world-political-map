@@ -38,6 +38,14 @@ echo Installation de Tailwind...
 call npm install -D tailwindcss postcss autoprefixer
 call npx tailwindcss init -p
 
+:: Mise a jour de la configuration Tailwind
+echo /** @type {import('tailwindcss').Config} */> tailwind.config.js
+echo module.exports = {>> tailwind.config.js
+echo   content: ['./src/**/*.{js,jsx,ts,tsx}'],>> tailwind.config.js
+echo   theme: { extend: {} },>> tailwind.config.js
+echo   plugins: [],>> tailwind.config.js
+echo };>> tailwind.config.js
+
 :: Configuration du projet
 echo Configuration du projet...
 
@@ -46,6 +54,22 @@ del src\App.test.tsx
 del src\setupTests.ts
 del src\reportWebVitals.ts
 del src\logo.svg
+
+:: Mettre a jour index.tsx
+echo import React from 'react';> src\index.tsx
+echo import ReactDOM from 'react-dom/client';>> src\index.tsx
+echo import './index.css';>> src\index.tsx
+echo import App from './App';>> src\index.tsx
+echo.>> src\index.tsx
+echo const root = ReactDOM.createRoot(>> src\index.tsx
+echo   document.getElementById('root') as HTMLElement>> src\index.tsx
+echo );>> src\index.tsx
+echo.>> src\index.tsx
+echo root.render(>> src\index.tsx
+echo   ^<React.StrictMode^>>> src\index.tsx
+echo     ^<App /^>>> src\index.tsx
+echo   ^</React.StrictMode^>>> src\index.tsx
+echo );>> src\index.tsx
 
 :: Mettre a jour App.tsx
 echo import React from 'react';> src\App.tsx
@@ -60,6 +84,16 @@ echo   );>> src\App.tsx
 echo }>> src\App.tsx
 echo.>> src\App.tsx
 echo export default App;>> src\App.tsx
+
+:: Mettre à jour App.css
+echo .App {> src\App.css
+echo   width: 100vw;>> src\App.css
+echo   height: 100vh;>> src\App.css
+echo   margin: 0;>> src\App.css
+echo   padding: 0;>> src\App.css
+echo   display: flex;>> src\App.css
+echo   flex-direction: column;>> src\App.css
+echo }>> src\App.css
 
 :: Configuration de TypeScript
 echo Configuration de TypeScript...
