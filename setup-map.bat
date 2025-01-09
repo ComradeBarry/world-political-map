@@ -10,14 +10,17 @@ if exist world-political-map (
     rd /s /q world-political-map
 )
 
-:: Cloner le projet avec la bonne URL
-echo Clonage du projet...
-git clone https://github.com/ComradeBarry/world-political-map.git
+:: Créer un nouveau projet React
+echo Creation du projet React...
+call npx create-react-app world-political-map
 cd world-political-map
 
-:: Configurer le remote origin
+:: Configurer Git
 echo Configuration de Git...
-git remote set-url origin https://github.com/ComradeBarry/world-political-map.git
+git init
+git remote add origin https://github.com/ComradeBarry/world-political-map.git
+git fetch origin
+git reset --hard origin/main
 
 :: Installer les dépendances
 echo Installation des dependances...
