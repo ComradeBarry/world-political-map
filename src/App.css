@@ -16,14 +16,12 @@
   height: 100%;
 }
 
-/* Pour s'assurer que la carte et les éléments de l'interface sont superposés correctement */
 .map-container {
   position: relative;
   width: 100%;
   height: 100%;
 }
 
-/* Style pour le panneau de contrôle */
 .control-panel {
   position: absolute;
   top: 10px;
@@ -35,7 +33,6 @@
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* Style pour le panneau de statistiques */
 .stats-panel {
   position: absolute;
   top: 10px;
