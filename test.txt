@@ -1,1 +1,4 @@
-Test
+{
+  "content": "VGVzdA==",
+  "encoding": "base64"
+}
