@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { LatLngTuple } from 'leaflet';
+import 'leaflet.markercluster';
 
 // Couleurs par idéologie
 const ideologyColors = {
@@ -46,12 +49,33 @@ const sampleParties: PoliticalParty[] = [
     yearFounded: 1980,
     status: "active",
     description: "Parti écologiste allemand"
+  },
+  {
+    id: 'it-pd',
+    name: "Partito Democratico",
+    country: "Italy",
+    coordinates: [41.9028, 12.4964] as LatLngTuple,
+    ideology: "socialist",
+    yearFounded: 2007,
+    status: "active",
+    description: "Principal parti de centre-gauche italien"
+  },
+  {
+    id: 'uk-labour',
+    name: "Labour Party",
+    country: "United Kingdom",
+    coordinates: [51.5074, -0.1278] as LatLngTuple,
+    ideology: "socialist",
+    yearFounded: 1900,
+    status: "active",
+    description: "Principal parti travailliste britannique"
   }
 ];
 
 const WorldMap: React.FC = () => {
   const [map, setMap] = useState<L.Map | null>(null);
   const [selectedParty, setSelectedParty] = useState<PoliticalParty | null>(null);
+  const [markerClusterGroup, setMarkerClusterGroup] = useState<L.MarkerClusterGroup | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !map && window.L) {
@@ -67,9 +91,46 @@ const WorldMap: React.FC = () => {
         maxZoom: 18
       }).addTo(mapInstance);
 
-      setMap(mapInstance);
+      // Créer un groupe de marqueurs
+      const clusterGroup = window.L.markerClusterGroup({
+        iconCreateFunction: function(cluster) {
+          const markers = cluster.getAllChildMarkers();
+          const ideologyCounts: Record<string, number> = {};
+          
+          // Compter les idéologies dans le cluster
+          markers.forEach(marker => {
+            const party = (marker as any).party;
+            if (party) {
+              ideologyCounts[party.ideology] = (ideologyCounts[party.ideology] || 0) + 1;
+            }
+          });
 
-      // Créer les marqueurs avec popups
+          // Trouver l'idéologie dominante
+          let dominantIdeology = Object.entries(ideologyCounts)
+            .sort(([,a], [,b]) => b - a)[0]?.[0] || 'centrist';
+
+          // Créer l'icône du cluster
+          return window.L.divIcon({
+            html: `<div style="
+              background-color: ${ideologyColors[dominantIdeology as keyof typeof ideologyColors]};
+              color: white;
+              width: 30px;
+              height: 30px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+              border: 2px solid white;
+              box-shadow: 0 0 4px rgba(0,0,0,0.3);
+            ">${cluster.getChildCount()}</div>`,
+            className: 'custom-cluster-icon',
+            iconSize: window.L.point(30, 30)
+          });
+        }
+      });
+
+      // Ajouter les marqueurs au groupe
       sampleParties.forEach(party => {
         const icon = window.L.divIcon({
           className: 'custom-marker',
@@ -84,24 +145,31 @@ const WorldMap: React.FC = () => {
           iconSize: [16, 16]
         });
 
-        const marker = window.L.marker(party.coordinates, { icon })
-          .bindPopup(`
-            <div style="min-width: 200px;">
-              <h3 style="margin: 0; font-size: 16px; color: ${ideologyColors[party.ideology]};">
-                ${party.name}
-              </h3>
-              <p style="margin: 5px 0;"><strong>Pays:</strong> ${party.country}</p>
-              <p style="margin: 5px 0;"><strong>Idéologie:</strong> ${party.ideology}</p>
-              <p style="margin: 5px 0;"><strong>Fondé en:</strong> ${party.yearFounded}</p>
-              ${party.description ? `<p style="margin: 5px 0;">${party.description}</p>` : ''}
-            </div>
-          `)
-          .addTo(mapInstance);
+        const marker = window.L.marker(party.coordinates, { icon });
+        (marker as any).party = party;  // Stocker les données du parti dans le marqueur
+        
+        marker.bindPopup(`
+          <div style="min-width: 200px;">
+            <h3 style="margin: 0; font-size: 16px; color: ${ideologyColors[party.ideology]};">
+              ${party.name}
+            </h3>
+            <p style="margin: 5px 0;"><strong>Pays:</strong> ${party.country}</p>
+            <p style="margin: 5px 0;"><strong>Idéologie:</strong> ${party.ideology}</p>
+            <p style="margin: 5px 0;"><strong>Fondé en:</strong> ${party.yearFounded}</p>
+            ${party.description ? `<p style="margin: 5px 0;">${party.description}</p>` : ''}
+          </div>
+        `);
 
         marker.on('click', () => {
           setSelectedParty(party);
         });
+
+        clusterGroup.addLayer(marker);
       });
+
+      mapInstance.addLayer(clusterGroup);
+      setMarkerClusterGroup(clusterGroup);
+      setMap(mapInstance);
 
       return () => {
         mapInstance.remove();
